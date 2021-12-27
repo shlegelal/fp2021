@@ -1,8 +1,7 @@
 open Asm_lib
 
 let () =
-  let s = Stdio.In_channel.input_all Caml.stdin in
-  match Asm_lib.Parser.parse s with
-  | Result.Ok ast -> Format.printf "%a\n%!" (Printast.pp Format.pp_print_char) ast
-  | Error _ -> Format.printf "Some error"
-;;
+  let s = Stdio.In_channel.input_all stdin in
+  match Parser.parse s with
+  | Result.Ok ast -> Ast.pp_directive Format.std_formatter ast
+  | Error e -> print_string ("Error" ^ e)
