@@ -57,104 +57,84 @@ let is_mnemonic = function
   (* --- Movement --- *)
   | "MOV"
   (*
-     mov <reg>,<reg>
-     mov <reg>,<mem>
-     mov <mem>,<reg>
-     mov <reg>,<con>
-     mov <mem>,<con>
+      mov <reg>,<reg>
+      mov <reg>,<mem>
+      mov <reg>,<con>
   *)
    |"PUSH"
   (*
-     push <reg32>
-     push <mem>
-     push <con32> *)
-   |"POP" (*
-       pop <reg32>
-       pop <mem>
-    *)
-   |"LEA"
+      push <label> 
+  *)
+   |"POP"
   (*
-     lea <reg32>,<mem>
+      pop <reg32>
   *)
   (* --- Arithmetic and Logic --- *)
-   |"ADD"
-   |"SUB"
-    (*
-       add/sub <reg>,<reg>
-       add/sub <reg>,<mem>
-       add/sub <mem>,<reg>
-       add/sub <reg>,<con>
-       add/sub <mem>,<con>
-    *)
-   |"INC" | "DEC" (*
-       inc/dec <reg>
-       inc/dec <mem>
-    *)
-   |"IMUL" (*
-       imul <reg32>,<reg32>
-       imul <reg32>,<mem>
-    *)
-   |"IDIV" (*
-       idiv <reg32>
-       idiv <mem>
-    *)
-   |"AND" | "OR"
-   |"XOR"
-    (*
-       and/or/xor <reg>,<reg>
-       and/or/xor <reg>,<mem>
-       and/or/xor <mem>,<reg>
-       and/or/xor <reg>,<con>
-       and/or/xor <mem>,<con>
-    *)
-   |"NOT" | "NEG" (*
-       not/neg <reg>
-       not/neg <mem>
-    *)
+   |"ADD" | "SUB"
+  (*
+      add/sub <reg>,<reg>
+      add/sub <reg>,<mem>
+      add/sub <reg>,<con>
+  *)
+   |"INC" | "DEC"
+  (*
+      inc/dec <reg>
+  *)
+   |"IMUL"
+  (*
+      imul <reg32>,<reg32>
+      imul <reg32>,<mem>
+  *)
+   |"AND" | "OR" | "XOR"
+  (*
+      and/or/xor <reg>,<reg>
+      and/or/xor <reg>,<mem>
+      and/or/xor <reg>,<con>
+  *)
+   |"NOT" | "NEG"
+  (*
+      not/neg <reg>
+  *)
    |"SHL" | "SHR"
   (*
-     shl/shr <reg>,<con8>
-     shl/shr <mem>,<con8>
-     shl/shr <reg>,<cl>
-     shl/shr <mem>,<cl>
+      shl/shr <reg>,<con8>
   *)
   (* --- Control Flow --- *)
-   |"JMP" (*
-       jmp <label>
-    *)
-   |"JE" | "JNE" | "JZ" | "JG" | "JGE" | "JL"
-   |"JLE" (*
-       j* <label>
-    *)
+   |"JMP"
+  (*
+      jmp <label>
+  *)
+   |"JE" | "JNE" | "JG" | "JGE" | "JL" | "JLE"
+  (*
+      j* <label>
+  *)
    |"CMP"
-    (*
-       cmp <reg>,<reg>
-       cmp <reg>,<mem>
-       cmp <mem>,<reg>
-       cmp <reg>,<con>
-    *)
-   |"CALL" (*
-       call <label>
-    *)
+  (*
+      cmp <reg>,<reg>
+      cmp <reg>,<mem>
+      cmp <reg>,<con>
+  *)
+   |"CALL"
+  (*
+      call <label>
+  *)
    |"RET"
   (*
-     ret
+      ret
   *)
    |"SYSCALL"
   (*
-     syscall
+      syscall
   *)
   (* --- SSE --- *)
-   |"MOVUPS" | "MOVSS" | "MOVLPS"
-   |"MOVHPS"
+   |"ADDPD" | "SUBPD" | "MULPD"
+   |"MOVAPD"
     (*
-       movups <regSSE>,<regSSE>
-       movups <regSSE>,<mem>
-       movups <regSSE>,<con>
-       movups <mem>,<regSSE>
-       movups <mem>,<con>
-    *)
-   |"ADDSS" | "MULSS" | "SUBSS" | "SHUFPS" ->
+       movapd <regSSE>,<regSSE>
+       movapd <regSSE>,<mem>
+       movapd <regSSE>,<con>
+  *)
+    ->
       true
   | _ -> false
 
@@ -195,7 +175,7 @@ let expr_p =
                  | 'A' .. 'F' -> true
                  | 'a' .. 'f' -> true
                  | _ -> false ) )
-          >>| fun s -> Int64.of_string (sign ^ "0x" ^ s) in
+          >>| fun s -> Int64.of_string (String.concat "" [sign; "0x"; s]) in
         let decNumber =
           option "" (string "+" <|> string "-")
           >>= fun sign ->
